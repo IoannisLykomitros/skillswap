@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const e = require('express');
 require('dotenv').config();
+const { pool, testConnection } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,8 +19,39 @@ app.get('/', (req, res) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
+// Test database route
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW() as current_time');
+    res.json({
+      success: true,
+      message: 'Database connection successful',
+      timestamp: result.rows[0].current_time
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Database connection failed',
+      error: error.message
+    });
+  }
 });
+
+// Start server and test database connection
+const startServer = async () => {
+  try {
+    // Test database connection first
+    await testConnection();
+    
+    // Start Express server
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
