@@ -1,4 +1,5 @@
 const express = require('express');
+const { register } = require('../controllers/authController');
 const router = express.Router();
 
 // Authentication Routes
@@ -8,13 +9,7 @@ const router = express.Router();
  * Register a new user
  * Body: { email, password, name }
  */
-router.post('/register', (req, res) => {
-  res.status(200).json({ 
-    message: 'Register endpoint',
-    path: '/api/auth/register',
-    method: 'POST'
-  });
-});
+router.post('/register', register);
 
 /**
  * POST /api/auth/login
