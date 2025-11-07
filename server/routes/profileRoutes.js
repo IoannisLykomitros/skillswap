@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
+const { getProfile } = require('../controllers/profileController');
 
 /**
  * GET /api/profile/:userId
@@ -9,12 +10,7 @@ const { authenticateToken } = require('../middleware/auth');
  * Returns: User info and their offered/wanted skills
  * Public route (no authentication required to view profiles)
  */
-router.get('/:userId', (req, res) => {
-  res.status(200).json({
-    message: 'Get profile endpoint',
-    userId: req.params.userId
-  });
-});
+router.get('/:userId', getProfile);
 
 /**
  * PUT /api/profile
