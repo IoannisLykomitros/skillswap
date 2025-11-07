@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
+const { getAllSkills } = require('../controllers/skillController');
 
 // Controllers will be imported here (we'll create them next)
 // const skillController = require('../controllers/skillController');
@@ -13,12 +14,7 @@ const { authenticateToken } = require('../middleware/auth');
  *   - search: Search by skill name (e.g., ?search=java)
  * Public route (no authentication required)
  */
-router.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Get all skills endpoint - implementation coming next',
-    queryParams: req.query
-  });
-});
+router.get('/', getAllSkills);
 
 /**
  * GET /api/skills/user/:userId
