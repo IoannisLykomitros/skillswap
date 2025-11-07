@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
-const { getProfile } = require('../controllers/profileController');
+const { getProfile, updateProfile } = require('../controllers/profileController');
 
 /**
  * GET /api/profile/:userId
@@ -19,11 +19,6 @@ router.get('/:userId', getProfile);
  * Body: { name, bio, location }
  * Protected route (authentication required)
  */
-router.put('/', authenticateToken, (req, res) => {
-  res.status(200).json({
-    message: 'Update profile endpoint',
-    userId: req.user.userId
-  });
-});
+router.put('/', authenticateToken, updateProfile);
 
 module.exports = router;

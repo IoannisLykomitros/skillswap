@@ -103,5 +103,111 @@ const getProfile = async (req, res) => {
     });
   }
 };
+/**
+ * Update current user's profile
+ * PUT /api/profile
+ * Headers: { Authorization: "Bearer <token>" }
+ * Body: { name, bio, location }
+ * Protected route (authentication required)
+ */
+const updateProfile = async (req, res) => {
+  const userId = req.user.userId;
+  const { name, bio, location } = req.body;
 
-module.exports = { getProfile };
+  try {
+    if (!name && !bio && !location) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide at least one field to update (name, bio, or location)'
+      });
+    }
+
+    if (name !== undefined && (!name || name.trim() === '')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name cannot be empty'
+      });
+    }
+
+    if (bio !== undefined && bio.length > 500) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bio cannot exceed 500 characters'
+      });
+    }
+
+    if (location !== undefined && location.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Location cannot exceed 100 characters'
+      });
+    }
+
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (name !== undefined) {
+      updates.push(`name = $${paramCount}`);
+      values.push(name.trim());
+      paramCount++;
+    }
+
+    if (bio !== undefined) {
+      updates.push(`bio = $${paramCount}`);
+      values.push(bio);
+      paramCount++;
+    }
+
+    if (location !== undefined) {
+      updates.push(`location = $${paramCount}`);
+      values.push(location);
+      paramCount++;
+    }
+
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+    values.push(userId);
+
+    const updateQuery = `
+      UPDATE users
+      SET ${updates.join(', ')}
+      WHERE id = $${paramCount}
+      RETURNING id, email, name, bio, location, created_at, updated_at
+    `;
+
+    const result = await pool.query(updateQuery, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const updatedUser = result.rows[0];
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      profile: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        bio: updatedUser.bio,
+        location: updatedUser.location,
+        createdAt: updatedUser.created_at,
+        updatedAt: updatedUser.updated_at
+      }
+    });
+
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating the profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+module.exports = { getProfile, updateProfile };
