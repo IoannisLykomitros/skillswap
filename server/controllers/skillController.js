@@ -329,4 +329,79 @@ const addUserSkill = async (req, res) => {
   }
 };
 
-module.exports = { getAllSkills, getUserSkills, addUserSkill };
+/**
+ * Remove a skill from current user's profile
+ * DELETE /api/skills/user/:userSkillId
+ * Headers: { Authorization: "Bearer <token>" }
+ * Params: userSkillId (the id from user_skills table)
+ * Protected route (authentication required)
+ */
+const removeUserSkill = async (req, res) => {
+  const userId = req.user.userId;
+  const { userSkillId } = req.params;
+
+  try {
+    if (isNaN(userSkillId) || userSkillId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user skill ID. Please provide a valid numeric ID.'
+      });
+    }
+
+    const checkQuery = `
+      SELECT 
+        us.id,
+        us.user_id,
+        s.skill_name,
+        us.type
+      FROM user_skills us
+      JOIN skills s ON us.skill_id = s.id
+      WHERE us.id = $1
+    `;
+    const checkResult = await pool.query(checkQuery, [userSkillId]);
+
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User skill not found'
+      });
+    }
+
+    const userSkill = checkResult.rows[0];
+
+    if (userSkill.user_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to delete this skill'
+      });
+    }
+
+    const deleteQuery = `
+      DELETE FROM user_skills
+      WHERE id = $1
+      RETURNING id, user_id, skill_id
+    `;
+    const deleteResult = await pool.query(deleteQuery, [userSkillId]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Skill removed successfully',
+      data: {
+        userSkillId: userSkill.id,
+        skillName: userSkill.skill_name,
+        type: userSkill.type,
+        message: `You are no longer ${userSkill.type === 'offer' ? 'offering' : 'learning'} ${userSkill.skill_name}`
+      }
+    });
+
+  } catch (error) {
+    console.error('Remove user skill error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while removing the skill',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+module.exports = { getAllSkills, getUserSkills, addUserSkill, removeUserSkill };

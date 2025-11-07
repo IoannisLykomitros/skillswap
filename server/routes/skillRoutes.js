@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
-const { getAllSkills, getUserSkills, addUserSkill } = require('../controllers/skillController');
+const { getAllSkills, getUserSkills, addUserSkill, removeUserSkill } = require('../controllers/skillController');
 
 // Controllers will be imported here (we'll create them next)
 // const skillController = require('../controllers/skillController');
@@ -40,12 +40,6 @@ router.post('/user', authenticateToken, addUserSkill);
  * Params: userSkillId (the id from user_skills table)
  * Protected route (authentication required)
  */
-router.delete('/user/:userSkillId', authenticateToken, (req, res) => {
-  res.status(200).json({
-    message: 'Delete user skill endpoint - implementation coming next',
-    userSkillId: req.params.userSkillId,
-    userId: req.user.userId
-  });
-});
+router.delete('/user/:userSkillId', authenticateToken, removeUserSkill);
 
 module.exports = router;
