@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { pool } = require('../config/database');
+const { generateToken } = require('../config/jwt');
 
 const SALT_ROUNDS = 10; 
 
@@ -77,4 +78,64 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { register };
+/**
+ * Login an existing user
+ * POST /api/auth/login
+ * Body: { email, password }
+ */
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required'
+      });
+    }
+
+    const userQuery = 'SELECT id, email, password_hash, name FROM users WHERE email = $1';
+    const userResult = await pool.query(userQuery, [email]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    const token = generateToken(user.id, user.email);
+
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      token: token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      }
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred during login',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+module.exports = { register, login };

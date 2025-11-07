@@ -1,5 +1,5 @@
 const express = require('express');
-const { register } = require('../controllers/authController');
+const { register, login } = require('../controllers/authController');
 const router = express.Router();
 
 // Authentication Routes
@@ -16,12 +16,6 @@ router.post('/register', register);
  * Login an existing user
  * Body: { email, password }
  */
-router.post('/login', (req, res) => {
-  res.status(200).json({ 
-    message: 'Login endpoint',
-    path: '/api/auth/login',
-    method: 'POST'
-  });
-});
+router.post('/login', login);
 
 module.exports = router;
