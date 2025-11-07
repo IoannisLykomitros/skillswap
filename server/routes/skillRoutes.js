@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
-const { getAllSkills, getUserSkills } = require('../controllers/skillController');
+const { getAllSkills, getUserSkills, addUserSkill } = require('../controllers/skillController');
 
 // Controllers will be imported here (we'll create them next)
 // const skillController = require('../controllers/skillController');
@@ -31,12 +31,7 @@ router.get('/user/:userId', getUserSkills);
  * Body: { skill_id, type (offer/want), proficiency_level (optional) }
  * Protected route (authentication required)
  */
-router.post('/user', authenticateToken, (req, res) => {
-  res.status(201).json({
-    message: 'Add user skill endpoint - implementation coming next',
-    userId: req.user.userId
-  });
-});
+router.post('/user', authenticateToken, addUserSkill);
 
 /**
  * DELETE /api/skills/user/:userSkillId

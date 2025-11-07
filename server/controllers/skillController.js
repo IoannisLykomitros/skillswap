@@ -211,4 +211,122 @@ const getUserSkills = async (req, res) => {
   }
 };
 
-module.exports = { getAllSkills, getUserSkills };
+/**
+ * Add a skill to current user's profile
+ * POST /api/skills/user
+ * Headers: { Authorization: "Bearer <token>" }
+ * Body: { skill_id, type (offer/want), proficiency_level (optional) }
+ * Protected route (authentication required)
+ */
+const addUserSkill = async (req, res) => {
+  const userId = req.user.userId;
+  const { skill_id, type, proficiency_level } = req.body;
+
+  try {
+    if (!skill_id || !type) {
+      return res.status(400).json({
+        success: false,
+        message: 'skill_id and type are required'
+      });
+    }
+
+    if (isNaN(skill_id) || skill_id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'skill_id must be a valid positive number'
+      });
+    }
+
+    if (type !== 'offer' && type !== 'want') {
+      return res.status(400).json({
+        success: false,
+        message: 'type must be either "offer" or "want"'
+      });
+    }
+
+    const validProficiencyLevels = ['beginner', 'intermediate', 'advanced'];
+    if (proficiency_level && !validProficiencyLevels.includes(proficiency_level)) {
+      return res.status(400).json({
+        success: false,
+        message: 'proficiency_level must be one of: beginner, intermediate, advanced'
+      });
+    }
+
+    if (type === 'want' && proficiency_level) {
+      return res.status(400).json({
+        success: false,
+        message: 'proficiency_level cannot be set for "want" type skills'
+      });
+    }
+
+    const skillCheckQuery = 'SELECT id FROM skills WHERE id = $1';
+    const skillCheckResult = await pool.query(skillCheckQuery, [skill_id]);
+
+    if (skillCheckResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Skill not found'
+      });
+    }
+
+    const duplicateCheckQuery = `
+      SELECT id FROM user_skills 
+      WHERE user_id = $1 AND skill_id = $2 AND type = $3
+    `;
+    const duplicateCheckResult = await pool.query(
+      duplicateCheckQuery,
+      [userId, skill_id, type]
+    );
+
+    if (duplicateCheckResult.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: `You already have this skill as a "${type}" skill`
+      });
+    }
+
+    const insertQuery = `
+      INSERT INTO user_skills (user_id, skill_id, type, proficiency_level)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, user_id, skill_id, type, proficiency_level, created_at
+    `;
+
+    const insertResult = await pool.query(insertQuery, [
+      userId,
+      skill_id,
+      type,
+      proficiency_level || null
+    ]);
+
+    const userSkill = insertResult.rows[0];
+
+    const skillDetailsQuery = 'SELECT skill_name, category FROM skills WHERE id = $1';
+    const skillDetailsResult = await pool.query(skillDetailsQuery, [skill_id]);
+    const skillDetails = skillDetailsResult.rows[0];
+
+    res.status(201).json({
+      success: true,
+      message: 'Skill added successfully',
+      data: {
+        userSkillId: userSkill.id,
+        userId: userSkill.user_id,
+        skillId: userSkill.skill_id,
+        skillName: skillDetails.skill_name,
+        category: skillDetails.category,
+        type: userSkill.type,
+        proficiencyLevel: userSkill.proficiency_level,
+        createdAt: userSkill.created_at
+      }
+    });
+
+  } catch (error) {
+    console.error('Add user skill error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while adding the skill',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+module.exports = { getAllSkills, getUserSkills, addUserSkill };
