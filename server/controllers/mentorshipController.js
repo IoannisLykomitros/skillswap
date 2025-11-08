@@ -344,6 +344,287 @@ const getReceivedRequests = async (req, res) => {
   }
 };
 
-module.exports = { sendRequest, getSentRequests, getReceivedRequests };
+/**
+ * Accept a mentorship request
+ * PUT /api/requests/:requestId/accept
+ * Headers: { Authorization: "Bearer <token>" }
+ * Params: requestId (the request to accept)
+ * Protected route (authentication required)
+ */
+const acceptRequest = async (req, res) => {
+  const userId = req.user.userId;
+  const { requestId } = req.params;
+
+  try {
+    if (isNaN(requestId) || requestId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request ID'
+      });
+    }
+
+    const getRequestQuery = `
+      SELECT 
+        r.id,
+        r.sender_id,
+        r.receiver_id,
+        r.status,
+        u.name as sender_name,
+        s.skill_name
+      FROM requests r
+      JOIN users u ON r.sender_id = u.id
+      JOIN skills s ON r.skill_id = s.id
+      WHERE r.id = $1
+    `;
+
+    const requestResult = await pool.query(getRequestQuery, [requestId]);
+
+    if (requestResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Request not found'
+      });
+    }
+
+    const request = requestResult.rows[0];
+
+    if (request.receiver_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only the receiver can accept this request'
+      });
+    }
+
+    if (request.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot accept a ${request.status} request. Only pending requests can be accepted.`
+      });
+    }
+
+    const updateQuery = `
+      UPDATE requests
+      SET status = 'accepted', updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING id, status, updated_at
+    `;
+
+    const updateResult = await pool.query(updateQuery, [requestId]);
+    const updatedRequest = updateResult.rows[0];
+
+    res.status(200).json({
+      success: true,
+      message: 'Mentorship request accepted successfully',
+      data: {
+        requestId: updatedRequest.id,
+        status: updatedRequest.status,
+        updatedAt: updatedRequest.updated_at,
+        message: `You accepted ${request.sender_name}'s request to learn ${request.skill_name}`
+      }
+    });
+
+  } catch (error) {
+    console.error('Accept request error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while accepting the request',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+/**
+ * Decline a mentorship request
+ * PUT /api/requests/:requestId/decline
+ * Headers: { Authorization: "Bearer <token>" }
+ * Params: requestId (the request to decline)
+ * Protected route (authentication required)
+ */
+const declineRequest = async (req, res) => {
+  const userId = req.user.userId;
+  const { requestId } = req.params;
+
+  try {
+    if (isNaN(requestId) || requestId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request ID'
+      });
+    }
+
+    const getRequestQuery = `
+      SELECT 
+        r.id,
+        r.sender_id,
+        r.receiver_id,
+        r.status,
+        u.name as sender_name,
+        s.skill_name
+      FROM requests r
+      JOIN users u ON r.sender_id = u.id
+      JOIN skills s ON r.skill_id = s.id
+      WHERE r.id = $1
+    `;
+
+    const requestResult = await pool.query(getRequestQuery, [requestId]);
+
+    if (requestResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Request not found'
+      });
+    }
+
+    const request = requestResult.rows[0];
+
+    if (request.receiver_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only the receiver can decline this request'
+      });
+    }
+
+    if (request.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot decline a ${request.status} request. Only pending requests can be declined.`
+      });
+    }
+
+    const updateQuery = `
+      UPDATE requests
+      SET status = 'declined', updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING id, status, updated_at
+    `;
+
+    const updateResult = await pool.query(updateQuery, [requestId]);
+    const updatedRequest = updateResult.rows[0];
+
+    res.status(200).json({
+      success: true,
+      message: 'Mentorship request declined',
+      data: {
+        requestId: updatedRequest.id,
+        status: updatedRequest.status,
+        updatedAt: updatedRequest.updated_at,
+        message: `You declined ${request.sender_name}'s request to learn ${request.skill_name}`
+      }
+    });
+
+  } catch (error) {
+    console.error('Decline request error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while declining the request',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+/**
+ * Mark a mentorship as completed
+ * PUT /api/requests/:requestId/complete
+ * Headers: { Authorization: "Bearer <token>" }
+ * Params: requestId (the request to complete)
+ * Protected route (authentication required)
+ */
+const completeRequest = async (req, res) => {
+  const userId = req.user.userId;
+  const { requestId } = req.params;
+
+  try {
+    if (isNaN(requestId) || requestId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request ID'
+      });
+    }
+
+    const getRequestQuery = `
+      SELECT 
+        r.id,
+        r.sender_id,
+        r.receiver_id,
+        r.status,
+        u1.name as sender_name,
+        u2.name as receiver_name,
+        s.skill_name
+      FROM requests r
+      JOIN users u1 ON r.sender_id = u1.id
+      JOIN users u2 ON r.receiver_id = u2.id
+      JOIN skills s ON r.skill_id = s.id
+      WHERE r.id = $1
+    `;
+
+    const requestResult = await pool.query(getRequestQuery, [requestId]);
+
+    if (requestResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Request not found'
+      });
+    }
+
+    const request = requestResult.rows[0];
+
+    if (request.sender_id !== userId && request.receiver_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only participants can mark this mentorship as completed'
+      });
+    }
+
+    if (request.status !== 'accepted') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot complete a ${request.status} request. Only accepted requests can be completed.`
+      });
+    }
+
+    const updateQuery = `
+      UPDATE requests
+      SET 
+        status = 'completed', 
+        updated_at = CURRENT_TIMESTAMP,
+        completed_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING id, status, updated_at, completed_at
+    `;
+
+    const updateResult = await pool.query(updateQuery, [requestId]);
+    const updatedRequest = updateResult.rows[0];
+
+    res.status(200).json({
+      success: true,
+      message: 'Mentorship marked as completed successfully',
+      data: {
+        requestId: updatedRequest.id,
+        status: updatedRequest.status,
+        updatedAt: updatedRequest.updated_at,
+        completedAt: updatedRequest.completed_at,
+        message: `Mentorship session for ${request.skill_name} marked as completed`
+      }
+    });
+
+  } catch (error) {
+    console.error('Complete request error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while completing the request',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+module.exports = { 
+  sendRequest, 
+  getSentRequests, 
+  getReceivedRequests,
+  acceptRequest,
+  declineRequest,
+  completeRequest
+};
+
 
 
