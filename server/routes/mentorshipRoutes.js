@@ -9,6 +9,7 @@ const {
     declineRequest,
     completeRequest
 } = require('../controllers/mentorshipController');
+const { validateSendRequest, validateIdParam } = require('../middleware/validation');
 
 /**
  * GET /api/requests/sent
@@ -24,21 +25,21 @@ router.get('/received', authenticateToken, getReceivedRequests);
  * POST /api/requests
  * Send a new mentorship request
  */
-router.post('/', authenticateToken, sendRequest);
+router.post('/', authenticateToken, validateSendRequest, sendRequest);
 /**
  * PUT /api/requests/:requestId/accept
  * Accept a mentorship request
  */
-router.put('/:requestId/accept', authenticateToken, acceptRequest);
+router.put('/:requestId/accept', authenticateToken, validateIdParam('requestId'), acceptRequest);
 /**
  * PUT /api/requests/:requestId/decline
  * Decline a mentorship request
  */
-router.put('/:requestId/decline', authenticateToken, declineRequest);
+router.put('/:requestId/decline', authenticateToken, validateIdParam('requestId'), declineRequest);
 /**
  * PUT /api/requests/:requestId/complete
  * Mark a mentorship as completed
  */
-router.put('/:requestId/complete', authenticateToken, completeRequest);
+router.put('/:requestId/complete', authenticateToken, validateIdParam('requestId'), completeRequest);
 
 module.exports = router;

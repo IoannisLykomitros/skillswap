@@ -1,23 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const { register, login } = require('../controllers/authController');
+const { validateRegister, validateLogin } = require('../middleware/validation');
 const { authenticateToken } = require('../middleware/auth');
-
-// Authentication Routes
 
 /**
  * POST /api/auth/register
  * Register a new user
  * Body: { email, password, name }
  */
-router.post('/register', register);
+router.post('/register', validateRegister, register);
 
 /**
  * POST /api/auth/login
  * Login an existing user
  * Body: { email, password }
  */
-router.post('/login', login);
+router.post('/login', validateLogin, login);
 
 /**
  * POST /api/auth/logout

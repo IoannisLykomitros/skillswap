@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
 const { getAllSkills, getUserSkills, addUserSkill, removeUserSkill } = require('../controllers/skillController');
+const { validateAddUserSkill, validateIdParam } = require('../middleware/validation');
 
 // Controllers will be imported here (we'll create them next)
 // const skillController = require('../controllers/skillController');
@@ -22,7 +23,7 @@ router.get('/', getAllSkills);
  * Params: userId (user id to fetch skills for)
  * Public route (no authentication required)
  */
-router.get('/user/:userId', getUserSkills);
+router.get('/user/:userId', validateIdParam('userId'), getUserSkills);
 
 /**
  * POST /api/skills/user
@@ -31,7 +32,7 @@ router.get('/user/:userId', getUserSkills);
  * Body: { skill_id, type (offer/want), proficiency_level (optional) }
  * Protected route (authentication required)
  */
-router.post('/user', authenticateToken, addUserSkill);
+router.post('/user', authenticateToken, validateAddUserSkill, addUserSkill);
 
 /**
  * DELETE /api/skills/user/:userSkillId
@@ -40,6 +41,6 @@ router.post('/user', authenticateToken, addUserSkill);
  * Params: userSkillId (the id from user_skills table)
  * Protected route (authentication required)
  */
-router.delete('/user/:userSkillId', authenticateToken, removeUserSkill);
+router.delete('/user/:userSkillId', authenticateToken, validateIdParam('userSkillId'), removeUserSkill);
 
 module.exports = router;

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
 const { getProfile, updateProfile } = require('../controllers/profileController');
+const { validateUpdateProfile, validateIdParam } = require('../middleware/validation');
 
 /**
  * GET /api/profile/:userId
@@ -10,7 +11,7 @@ const { getProfile, updateProfile } = require('../controllers/profileController'
  * Returns: User info and their offered/wanted skills
  * Public route (no authentication required to view profiles)
  */
-router.get('/:userId', getProfile);
+router.get('/:userId', validateIdParam('userId'), getProfile);
 
 /**
  * PUT /api/profile
@@ -19,6 +20,6 @@ router.get('/:userId', getProfile);
  * Body: { name, bio, location }
  * Protected route (authentication required)
  */
-router.put('/', authenticateToken, updateProfile);
+router.put('/', authenticateToken, validateUpdateProfile, updateProfile);
 
 module.exports = router;
