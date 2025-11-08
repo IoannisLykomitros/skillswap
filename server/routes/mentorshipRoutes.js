@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
+const { sendRequest } = require('../controllers/mentorshipController');
 
 /**
  * GET /api/requests/sent
@@ -35,12 +36,7 @@ router.get('/received', authenticateToken, (req, res) => {
  * Body: { receiver_id, skill_id, message (optional) }
  * Protected route (authentication required)
  */
-router.post('/', authenticateToken, (req, res) => {
-  res.status(201).json({
-    message: 'Send request endpoint - implementation coming next',
-    senderId: req.user.userId
-  });
-});
+router.post('/', authenticateToken, sendRequest);
 
 /**
  * PUT /api/requests/:requestId/accept
