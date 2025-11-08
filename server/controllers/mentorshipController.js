@@ -146,4 +146,204 @@ const sendRequest = async (req, res) => {
   }
 };
 
-module.exports = { sendRequest };
+/**
+ * Get all mentorship requests sent by the current user
+ * GET /api/requests/sent
+ * Headers: { Authorization: "Bearer <token>" }
+ * Protected route (authentication required)
+ */
+const getSentRequests = async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const query = `
+      SELECT 
+        r.id,
+        r.sender_id,
+        r.receiver_id,
+        r.skill_id,
+        r.message,
+        r.status,
+        r.created_at,
+        r.updated_at,
+        r.completed_at,
+        u.name as receiver_name,
+        u.email as receiver_email,
+        s.skill_name,
+        s.category as skill_category
+      FROM requests r
+      JOIN users u ON r.receiver_id = u.id
+      JOIN skills s ON r.skill_id = s.id
+      WHERE r.sender_id = $1
+      ORDER BY 
+        CASE r.status
+          WHEN 'pending' THEN 1
+          WHEN 'accepted' THEN 2
+          WHEN 'completed' THEN 3
+          WHEN 'declined' THEN 4
+        END,
+        r.created_at DESC
+    `;
+
+    const result = await pool.query(query, [userId]);
+    const requests = result.rows;
+
+    const organized = {
+      pending: [],
+      accepted: [],
+      declined: [],
+      completed: []
+    };
+
+    requests.forEach(req => {
+      const requestData = {
+        requestId: req.id,
+        receiver: {
+          id: req.receiver_id,
+          name: req.receiver_name,
+          email: req.receiver_email
+        },
+        skill: {
+          id: req.skill_id,
+          skillName: req.skill_name,
+          category: req.skill_category
+        },
+        message: req.message,
+        status: req.status,
+        createdAt: req.created_at,
+        updatedAt: req.updated_at,
+        completedAt: req.completed_at
+      };
+
+      organized[req.status].push(requestData);
+    });
+
+    const summary = {
+      total: requests.length,
+      pending: organized.pending.length,
+      accepted: organized.accepted.length,
+      declined: organized.declined.length,
+      completed: organized.completed.length
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Sent requests retrieved successfully',
+      data: {
+        requests: organized,
+        summary: summary
+      }
+    });
+
+  } catch (error) {
+    console.error('Get sent requests error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while retrieving sent requests',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+/**
+ * Get all mentorship requests received by the current user
+ * GET /api/requests/received
+ * Headers: { Authorization: "Bearer <token>" }
+ * Protected route (authentication required)
+ */
+const getReceivedRequests = async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const query = `
+      SELECT 
+        r.id,
+        r.sender_id,
+        r.receiver_id,
+        r.skill_id,
+        r.message,
+        r.status,
+        r.created_at,
+        r.updated_at,
+        r.completed_at,
+        u.name as sender_name,
+        u.email as sender_email,
+        s.skill_name,
+        s.category as skill_category
+      FROM requests r
+      JOIN users u ON r.sender_id = u.id
+      JOIN skills s ON r.skill_id = s.id
+      WHERE r.receiver_id = $1
+      ORDER BY 
+        CASE r.status
+          WHEN 'pending' THEN 1
+          WHEN 'accepted' THEN 2
+          WHEN 'completed' THEN 3
+          WHEN 'declined' THEN 4
+        END,
+        r.created_at DESC
+    `;
+
+    const result = await pool.query(query, [userId]);
+    const requests = result.rows;
+
+    const organized = {
+      pending: [],
+      accepted: [],
+      declined: [],
+      completed: []
+    };
+
+    requests.forEach(req => {
+      const requestData = {
+        requestId: req.id,
+        sender: {
+          id: req.sender_id,
+          name: req.sender_name,
+          email: req.sender_email
+        },
+        skill: {
+          id: req.skill_id,
+          skillName: req.skill_name,
+          category: req.skill_category
+        },
+        message: req.message,
+        status: req.status,
+        createdAt: req.created_at,
+        updatedAt: req.updated_at,
+        completedAt: req.completed_at
+      };
+
+      organized[req.status].push(requestData);
+    });
+
+    const summary = {
+      total: requests.length,
+      pending: organized.pending.length,
+      accepted: organized.accepted.length,
+      declined: organized.declined.length,
+      completed: organized.completed.length
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Received requests retrieved successfully',
+      data: {
+        requests: organized,
+        summary: summary
+      }
+    });
+
+  } catch (error) {
+    console.error('Get received requests error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while retrieving received requests',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+module.exports = { sendRequest, getSentRequests, getReceivedRequests };
+
+
