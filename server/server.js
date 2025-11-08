@@ -17,6 +17,29 @@ const PORT = process.env.PORT || 5000;
 // Security middleware
 app.use(helmet());
 
+// CORS Configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = process.env.NODE_ENV === 'production'
+      ? [process.env.CLIENT_URL] 
+      : ['http://localhost:3000', 'http://localhost:5173']; 
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: 100,
@@ -89,6 +112,7 @@ const startServer = async () => {
       console.log(`Server is running on http://localhost:${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
       console.log(`Security: Helmet and Rate Limiting enabled`);
+      console.log(`CORS: Configured for ${process.env.CLIENT_URL || 'development'}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
