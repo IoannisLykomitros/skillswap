@@ -11,6 +11,10 @@ import Profile from './pages/Profile';
 import Skills from './pages/Skills';
 import NotFound from './pages/NotFound';
 
+// Route Protection
+import ProtectedRoute from './components/Route/ProtectedRoute';
+import PublicOnlyRoute from './components/Route/PublicOnlyRoute';
+
 function App() {
   return (
     <Router>
@@ -18,13 +22,45 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/skills" element={<Skills />} />
           
-          {/* Protected Routes (will add auth check later) */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile/:userId" element={<Profile />} />
+          {/* Public Only Routes */}
+          <Route 
+            path="/login" 
+            element={
+              <PublicOnlyRoute>
+                <Login />
+              </PublicOnlyRoute>
+            } 
+          />
+          
+          <Route 
+            path="/register" 
+            element={
+              <PublicOnlyRoute>
+                <Register />
+              </PublicOnlyRoute>
+            } 
+          />
+          
+          {/* Protected Routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/profile/:userId" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
           
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
