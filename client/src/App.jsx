@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './styles/App.css';
+import Layout from './components/Layout/Layout';
 
 // Pages
 import Home from './pages/Home';
@@ -18,7 +19,7 @@ import PublicOnlyRoute from './components/Route/PublicOnlyRoute';
 function App() {
   return (
     <Router>
-      <div className="App">
+      <Layout>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -65,7 +66,7 @@ function App() {
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </div>
+      </Layout>
     </Router>
   );
 }
