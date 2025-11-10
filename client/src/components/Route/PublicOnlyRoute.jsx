@@ -1,13 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/helpers';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * Public Only Route Component
  * Redirects to dashboard if user is already authenticated
- * Used for login/register pages
+ * Now uses Auth Context
  */
 const PublicOnlyRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
   if (isAuthenticated()) {
     return <Navigate to="/dashboard" replace />;
   }
