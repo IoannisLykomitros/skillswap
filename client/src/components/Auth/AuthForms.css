@@ -90,6 +90,22 @@
   font-size: 0.9rem;
 }
 
+/* Field-level error styling */
+.input-error {
+  border-color: #c33 !important;
+}
+
+.field-error {
+  color: #c33;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.form-group input.input-error:focus {
+  border-color: #c33;
+}
+
 /* Success Message */
 .success-message {
   background-color: #efe;
