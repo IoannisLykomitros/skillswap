@@ -1,0 +1,216 @@
+/* Request Card Container */
+.request-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s, transform 0.3s;
+  border-left: 4px solid transparent;
+}
+
+.request-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Status Colors */
+.request-card.status-pending {
+  border-left-color: #ff9800;
+}
+
+.request-card.status-accepted {
+  border-left-color: #4caf50;
+}
+
+.request-card.status-declined {
+  border-left-color: #f44336;
+}
+
+.request-card.status-completed {
+  border-left-color: #2196f3;
+}
+
+/* Request Header */
+.request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.request-user {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-info h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.user-email {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Status Badge */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.status-pending {
+  background-color: #fff3e0;
+  color: #ff9800;
+}
+
+.status-badge.status-accepted {
+  background-color: #e8f5e9;
+  color: #4caf50;
+}
+
+.status-badge.status-declined {
+  background-color: #ffebee;
+  color: #f44336;
+}
+
+.status-badge.status-completed {
+  background-color: #e3f2fd;
+  color: #2196f3;
+}
+
+/* Request Body */
+.request-body {
+  margin-bottom: 1rem;
+}
+
+.skill-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.skill-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.skill-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.05rem;
+}
+
+.skill-category {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+/* Message */
+.request-message {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.message-label {
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.message-text {
+  margin: 0;
+  color: #333;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Request Meta */
+.request-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.request-date,
+.completed-date {
+  display: flex;
+  align-items: center;
+}
+
+/* Request Actions */
+.request-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.waiting-text {
+  color: #ff9800;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.btn-success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #45a049;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .request-card {
+    padding: 1rem;
+  }
+
+  .request-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+  }
+
+  .request-actions {
+    flex-direction: column;
+  }
+
+  .request-actions button {
+    width: 100%;
+  }
+}
