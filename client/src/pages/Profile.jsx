@@ -1,12 +1,25 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import useProfile from '../features/profile/hooks/useProfile';
-import SkillBadge from '../features/skills/components/SkillBadge';
+import ProfileCard from '../features/profile/components/ProfileCard';
 import './Profile.css';
 
 const Profile = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { loading, error, profile, skills } = useProfile(userId);
+
+  const isOwnProfile = user && user.id === parseInt(userId);
+
+  const handleSendRequest = () => {
+    alert('Send mentorship request');
+  };
+
+  const handleEditProfile = () => {
+    navigate(`/profile/edit`);
+  };
 
   if (loading) {
     return (
@@ -35,6 +48,9 @@ const Profile = () => {
         <div className="empty-state">
           <h2>Profile not found</h2>
           <p>The user you're looking for doesn't exist.</p>
+          <button onClick={() => navigate('/')} className="btn btn-primary">
+            Go Home
+          </button>
         </div>
       </div>
     );
@@ -42,65 +58,21 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
-      <div className="profile-container">
-        <div className="profile-header">
-          <div className="profile-avatar">
-            {profile.name.charAt(0).toUpperCase()}
-          </div>
-          <div className="profile-info">
-            <h1>{profile.name}</h1>
-            <p className="profile-email">{profile.email}</p>
-            {profile.location && (
-              <p className="profile-location">📍 {profile.location}</p>
-            )}
-          </div>
-        </div>
-
-        {profile.bio && (
-          <div className="profile-bio">
-            <h3>About</h3>
-            <p>{profile.bio}</p>
-          </div>
+      <div className="profile-page-header">
+        <h1>{isOwnProfile ? 'My Profile' : `${profile.name}'s Profile`}</h1>
+        {isOwnProfile && (
+          <button onClick={handleEditProfile} className="btn btn-secondary">
+            Edit Profile
+          </button>
         )}
-
-        <div className="profile-skills">
-          <div className="skills-section">
-            <h3>Skills Offered ({skills.offered.length})</h3>
-            {skills.offered.length > 0 ? (
-              <div className="skills-list">
-                {skills.offered.map((skill) => (
-                  <SkillBadge
-                    key={skill.userSkillId}
-                    skill={skill}
-                    type="offer"
-                    showLevel={true}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="no-skills">No skills offered yet</p>
-            )}
-          </div>
-
-          <div className="skills-section">
-            <h3>Skills Wanted ({skills.wanted.length})</h3>
-            {skills.wanted.length > 0 ? (
-              <div className="skills-list">
-                {skills.wanted.map((skill) => (
-                  <SkillBadge
-                    key={skill.userSkillId}
-                    skill={skill}
-                    type="want"
-                    showLevel={false}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="no-skills">No skills wanted yet</p>
-            )}
-          </div>
-        </div>
       </div>
+
+      <ProfileCard
+        profile={profile}
+        skills={skills}
+        isOwnProfile={isOwnProfile}
+        onSendRequest={!isOwnProfile ? handleSendRequest : null}
+      />
     </div>
   );
 };
