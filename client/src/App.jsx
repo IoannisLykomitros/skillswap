@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './styles/App.css';
+
 import Layout from './components/Layout/Layout';
 
 // Pages
@@ -12,7 +13,8 @@ import Profile from './pages/Profile';
 import Skills from './pages/Skills';
 import NotFound from './pages/NotFound';
 
-// Route Protection
+import EditProfilePage from './features/profile/pages/EditProfilePage';
+
 import ProtectedRoute from './components/Route/ProtectedRoute';
 import PublicOnlyRoute from './components/Route/PublicOnlyRoute';
 
@@ -50,6 +52,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/edit-profile" 
+            element={
+              <ProtectedRoute>
+                <EditProfilePage />
               </ProtectedRoute>
             } 
           />

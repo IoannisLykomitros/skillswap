@@ -19,9 +19,19 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = () => {
       const storedToken = getToken();
+      const storedUser = localStorage.getItem('user');
       
       if (storedToken) {
         setTokenState(storedToken);
+        
+        if (storedUser) {
+          try {
+            setUser(JSON.parse(storedUser));
+          } catch (err) {
+            console.error('Error parsing stored user data:', err);
+            localStorage.removeItem('user');
+          }
+        }
       }
       
       setLoading(false);
@@ -34,16 +44,19 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
     setTokenState(authToken);
     saveToken(authToken);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
     setUser(null);
     setTokenState(null);
     removeToken();
+    localStorage.removeItem('user');
   };
 
   const updateUser = (userData) => {
     setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const isAuthenticated = () => {

@@ -18,7 +18,7 @@ const Profile = () => {
   };
 
   const handleEditProfile = () => {
-    navigate(`/profile/edit`);
+    navigate('/edit-profile');
   };
 
   if (loading) {
