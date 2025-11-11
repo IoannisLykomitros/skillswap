@@ -94,12 +94,20 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <div>
           <h1>Dashboard</h1>
-          {user && <p className="welcome-text">Welcome back, <strong>{user.name}</strong>!</p>}
+          {user && (
+            <>
+              <p className="welcome-text">Welcome back, <strong>{user.name}</strong>!</p>
+              <a href={`/profile/${user.id}`} className="btn btn-sm" style={{ marginTop: '0.5rem' }}>
+                View My Profile
+              </a>
+            </>
+          )}
         </div>
         <button onClick={handleLogout} className="btn btn-secondary">
           Logout
         </button>
       </div>
+
 
       {/* Action Error Display */}
       {actionError && (

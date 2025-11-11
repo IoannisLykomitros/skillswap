@@ -33,11 +33,11 @@ const LoginForm = () => {
 
     try {
       const response = await loginApi(formData);
-
       const { token, user } = response;
+      
+      console.log('Login successful:', user);
 
       login(user, token);
-
       navigate('/dashboard');
     } catch (err) {
       setError(getErrorMessage(err));
