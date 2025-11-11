@@ -82,6 +82,9 @@ const SkillForm = ({ allSkills, onSubmit, loading = false }) => {
 
   const skillsByCategory = getSkillsByCategory();
 
+console.log('All skills:', allSkills);
+console.log('Skills by category:', skillsByCategory);
+
   return (
     <div className="skill-form-container">
       <h3>Add a New Skill</h3>
@@ -115,12 +118,15 @@ const SkillForm = ({ allSkills, onSubmit, loading = false }) => {
               <optgroup key={category} label={category}>
                 {skills.map(skill => (
                   <option key={skill.id} value={skill.id}>
-                    {skill.name}
+                    {skill.skillName}  
                   </option>
                 ))}
               </optgroup>
             ))}
           </select>
+          <small className="field-hint">
+            Select the skill you want to add to your profile
+          </small>
         </div>
 
         {/* Type Selection */}
@@ -137,7 +143,8 @@ const SkillForm = ({ allSkills, onSubmit, loading = false }) => {
                 disabled={loading}
               />
               <span className="radio-text">
-                <strong>I can teach</strong> this skill
+                <strong>I can teach this skill</strong>
+                Share your expertise with others
               </span>
             </label>
             <label className="radio-label">
@@ -150,7 +157,8 @@ const SkillForm = ({ allSkills, onSubmit, loading = false }) => {
                 disabled={loading}
               />
               <span className="radio-text">
-                <strong>I want to learn</strong> this skill
+                <strong>I want to learn this skill</strong>
+                Find mentors to help you learn
               </span>
             </label>
           </div>

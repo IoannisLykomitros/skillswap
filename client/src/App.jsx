@@ -14,6 +14,7 @@ import Skills from './pages/Skills';
 import NotFound from './pages/NotFound';
 
 import EditProfilePage from './features/profile/pages/EditProfilePage';
+import ManageSkillsPage from './features/skills/pages/ManageSkillsPage';
 
 import ProtectedRoute from './components/Route/ProtectedRoute';
 import PublicOnlyRoute from './components/Route/PublicOnlyRoute';
@@ -64,6 +65,15 @@ function App() {
               </ProtectedRoute>
             } 
           />
+
+          <Route 
+            path="/manage-skills" 
+            element={
+              <ProtectedRoute>
+                <ManageSkillsPage />
+              </ProtectedRoute>
+            } 
+          />  
           
           <Route 
             path="/profile/:userId" 

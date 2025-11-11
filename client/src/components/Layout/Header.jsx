@@ -52,6 +52,10 @@ const Header = () => {
               <Link to={`/profile/${user?.id}`} className="nav-link" onClick={closeMobileMenu}>
                 My Profile
               </Link>
+
+              <Link to="/manage-skills" className="nav-link" onClick={closeMobileMenu}>
+                My Skills
+              </Link>
             </>
           )}
 
