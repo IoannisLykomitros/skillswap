@@ -1,24 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useProfile from '../features/profile/hooks/useProfile';
 import ProfileCard from '../features/profile/components/ProfileCard';
+import SendRequestForm from '../features/mentorship/components/SendRequestForm';
 import './Profile.css';
 
 const Profile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { loading, error, profile, skills } = useProfile(userId);
+  const { loading, error, profile, skills, refetch } = useProfile(userId);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const isOwnProfile = user && user.id === parseInt(userId);
 
-  const handleSendRequest = () => {
-    alert('Send mentorship request');
-  };
-
   const handleEditProfile = () => {
     navigate('/edit-profile');
+  };
+
+  const handleSendRequest = () => {
+    setShowRequestModal(true);
+  };
+
+  const handleRequestSuccess = () => {
+    setShowRequestModal(false);
+    setSuccessMessage('Mentorship request sent successfully!');
+    setTimeout(() => setSuccessMessage(''), 5000);
+  };
+
+  const handleCloseModal = () => {
+    setShowRequestModal(false);
   };
 
   if (loading) {
@@ -58,6 +71,7 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
+      {/* Page Header */}
       <div className="profile-page-header">
         <h1>{isOwnProfile ? 'My Profile' : `${profile.name}'s Profile`}</h1>
         {isOwnProfile && (
@@ -67,12 +81,36 @@ const Profile = () => {
         )}
       </div>
 
+      {/* Success Message */}
+      {successMessage && (
+        <div className="success-message">
+          <span>✓ {successMessage}</span>
+          <button 
+            className="success-dismiss"
+            onClick={() => setSuccessMessage('')}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Profile Card */}
       <ProfileCard
         profile={profile}
         skills={skills}
         isOwnProfile={isOwnProfile}
-        onSendRequest={!isOwnProfile ? handleSendRequest : null}
+        onSendRequest={!isOwnProfile && skills.offered.length > 0 ? handleSendRequest : null}
       />
+
+      {/* Send Request Modal */}
+      {showRequestModal && (
+        <SendRequestForm
+          mentorProfile={profile}
+          mentorSkills={skills.offered}
+          onClose={handleCloseModal}
+          onSuccess={handleRequestSuccess}
+        />
+      )}
     </div>
   );
 };

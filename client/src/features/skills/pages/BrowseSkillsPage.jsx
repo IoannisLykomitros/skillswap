@@ -152,6 +152,8 @@ const BrowseSkillsPage = () => {
                               key={user.userId} 
                               className="user-item"
                               onClick={() => handleViewProfile(user.userId)}
+                              role="button"
+                              tabIndex={0}
                             >
                               <div className="user-avatar">
                                 {user.userName.charAt(0).toUpperCase()}

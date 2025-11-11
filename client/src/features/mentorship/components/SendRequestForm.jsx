@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { sendMentorshipRequest } from '../../../services/mentorshipService';
+import { sendRequest } from '../../../services/mentorshipService';
 import { getErrorMessage } from '../../../utils/helpers';
 import './SendRequestForm.css';
 
@@ -48,7 +48,7 @@ const SendRequestForm = ({ mentorProfile, mentorSkills, onClose, onSuccess }) =>
         message: formData.message.trim() || null
       };
 
-      const response = await sendMentorshipRequest(requestData);
+      const response = await sendRequest(requestData);
 
       if (response.success) {
         if (onSuccess) {
