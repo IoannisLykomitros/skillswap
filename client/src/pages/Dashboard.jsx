@@ -1,71 +1,97 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useDashboard from '../features/dashboard/hooks/useDashboard';
-import DashboardStats from '../features/dashboard/components/DashboardStats';
-import RequestCard from '../features/mentorship/components/RequestCard';
-import { acceptRequest, declineRequest, completeRequest } from '../services/mentorshipService';
+import { useAuth } from '../context/AuthContext';
+import { getSentRequests, getReceivedRequests } from '../services/mentorshipService';
+import RequestActions from '../features/mentorship/components/RequestActions';
 import { getErrorMessage } from '../utils/helpers';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { loading, error, sentRequests, receivedRequests, stats, refetch } = useDashboard();
-  const [actionLoading, setActionLoading] = useState(false);
-  const [actionError, setActionError] = useState(null);
+  const { user, logout } = useAuth();
+  const [sentRequests, setSentRequests] = useState({
+    pending: [],
+    accepted: [],
+    declined: [],
+    completed: []
+  });
+  const [receivedRequests, setReceivedRequests] = useState({
+    pending: [],
+    accepted: [],
+    declined: [],
+    completed: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const fetchRequests = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const [sentResponse, receivedResponse] = await Promise.all([
+        getSentRequests(),
+        getReceivedRequests()
+      ]);
+
+      console.log('Sent response:', sentResponse);
+      console.log('Received response:', receivedResponse);
+
+      if (sentResponse.success) {
+        setSentRequests(sentResponse.data.requests || {
+          pending: [],
+          accepted: [],
+          declined: [],
+          completed: []
+        });
+      }
+
+      if (receivedResponse.success) {
+        setReceivedRequests(receivedResponse.data.requests || {
+          pending: [],
+          accepted: [],
+          declined: [],
+          completed: []
+        });
+      }
+    } catch (err) {
+      console.error('Fetch requests error:', err);
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const handleActionComplete = (action, requestId) => {
+    const messages = {
+      accepted: 'Request accepted successfully!',
+      declined: 'Request declined.',
+      completed: 'Mentorship marked as complete!'
+    };
+    
+    setSuccessMessage(messages[action] || 'Action completed successfully!');
+    fetchRequests();
+    setTimeout(() => setSuccessMessage(''), 5000);
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  // Handle accepting a request
-  const handleAccept = async (requestId) => {
-    setActionLoading(true);
-    setActionError(null);
-    
-    try {
-      await acceptRequest(requestId);
-      await refetch(); // Refresh dashboard data
-    } catch (err) {
-      setActionError(getErrorMessage(err));
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleDecline = async (requestId) => {
-    setActionLoading(true);
-    setActionError(null);
-    
-    try {
-      await declineRequest(requestId);
-      await refetch(); 
-    } catch (err) {
-      setActionError(getErrorMessage(err));
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleComplete = async (requestId) => {
-    setActionLoading(true);
-    setActionError(null);
-    
-    try {
-      await completeRequest(requestId);
-      await refetch();
-    } catch (err) {
-      setActionError(getErrorMessage(err));
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  const pendingSent = sentRequests.pending || [];
+  const acceptedSent = sentRequests.accepted || [];
+  const pendingReceived = receivedRequests.pending || [];
+  const acceptedReceived = receivedRequests.accepted || [];
 
   if (loading) {
     return (
-      <div className="dashboard-page">
+      <div className="dashboard">
         <div className="loading-spinner">
           <div className="spinner"></div>
           <p>Loading dashboard...</p>
@@ -74,33 +100,14 @@ const Dashboard = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="dashboard-page">
-        <div className="error-container">
-          <h2>Error Loading Dashboard</h2>
-          <p className="error-message">{error}</p>
-          <button onClick={refetch} className="btn btn-primary">
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="dashboard-page">
-      {/* Header */}
+    <div className="dashboard">
+      {/* Dashboard Header */}
       <div className="dashboard-header">
         <div>
           <h1>Dashboard</h1>
           {user && (
-            <>
-              <p className="welcome-text">Welcome back, <strong>{user.name}</strong>!</p>
-              <a href={`/profile/${user.id}`} className="btn btn-sm" style={{ marginTop: '0.5rem' }}>
-                View My Profile
-              </a>
-            </>
+            <p className="welcome-text">Welcome back, <strong>{user.name}</strong>!</p>
           )}
         </div>
         <button onClick={handleLogout} className="btn btn-secondary">
@@ -108,193 +115,229 @@ const Dashboard = () => {
         </button>
       </div>
 
-
-      {/* Action Error Display */}
-      {actionError && (
-        <div className="error-message">
-          <span>{actionError}</span>
+      {/* Success Message */}
+      {successMessage && (
+        <div className="success-message">
+          <span>✓ {successMessage}</span>
           <button 
-            className="error-dismiss"
-            onClick={() => setActionError(null)}
+            className="success-dismiss"
+            onClick={() => setSuccessMessage('')}
           >
             ×
           </button>
         </div>
       )}
 
-      {/* Stats */}
-      <DashboardStats stats={stats} />
+      {/* Error Message */}
+      {error && (
+        <div className="error-message">
+          <span>{error}</span>
+          <button 
+            className="error-dismiss"
+            onClick={() => setError(null)}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Dashboard Content */}
       <div className="dashboard-content">
-        
-        {/* Pending Received Requests */}
+        {/* Received Requests Section */}
         <section className="dashboard-section">
-          <h2 className="section-title">
-            📥 Pending Requests Received ({receivedRequests.pending.length})
-          </h2>
-          {receivedRequests.pending.length > 0 ? (
-            <div className="requests-grid">
-              {receivedRequests.pending.map((request) => (
-                <RequestCard
-                  key={request.requestId}
-                  request={request}
-                  type="received"
-                  onAccept={handleAccept}
-                  onDecline={handleDecline}
-                  onComplete={handleComplete}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <p>No pending requests received</p>
-              <small>When someone requests to learn from you, it will appear here</small>
-            </div>
-          )}
-        </section>
-
-        {/* Pending Sent Requests */}
-        <section className="dashboard-section">
-          <h2 className="section-title">
-            📤 Pending Requests Sent ({sentRequests.pending.length})
-          </h2>
-          {sentRequests.pending.length > 0 ? (
-            <div className="requests-grid">
-              {sentRequests.pending.map((request) => (
-                <RequestCard
-                  key={request.requestId}
-                  request={request}
-                  type="sent"
-                  onAccept={handleAccept}
-                  onDecline={handleDecline}
-                  onComplete={handleComplete}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <p>No pending sent requests</p>
-              <small>Browse skills and send mentorship requests to start learning</small>
-            </div>
-          )}
-        </section>
-
-        {/* Active Mentorships */}
-        <section className="dashboard-section">
-          <h2 className="section-title">
-            🤝 Active Mentorships ({sentRequests.accepted.length + receivedRequests.accepted.length})
-          </h2>
-          {(sentRequests.accepted.length + receivedRequests.accepted.length) > 0 ? (
-            <div className="requests-grid">
-              {/* Mentorships where I'm learning */}
-              {sentRequests.accepted.map((request) => (
-                <RequestCard
-                  key={request.requestId}
-                  request={request}
-                  type="sent"
-                  onAccept={handleAccept}
-                  onDecline={handleDecline}
-                  onComplete={handleComplete}
-                />
-              ))}
-              {/* Mentorships where I'm teaching */}
-              {receivedRequests.accepted.map((request) => (
-                <RequestCard
-                  key={request.requestId}
-                  request={request}
-                  type="received"
-                  onAccept={handleAccept}
-                  onDecline={handleDecline}
-                  onComplete={handleComplete}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <p>No active mentorships</p>
-              <small>Accept pending requests or wait for your requests to be accepted</small>
-            </div>
-          )}
-        </section>
-
-        {/* Completed Mentorships */}
-        <section className="dashboard-section">
-          <h2 className="section-title">
-            ✅ Completed Mentorships ({sentRequests.completed.length + receivedRequests.completed.length})
-          </h2>
-          {(sentRequests.completed.length + receivedRequests.completed.length) > 0 ? (
-            <div className="requests-grid">
-              {sentRequests.completed.map((request) => (
-                <RequestCard
-                  key={request.requestId}
-                  request={request}
-                  type="sent"
-                  onAccept={handleAccept}
-                  onDecline={handleDecline}
-                  onComplete={handleComplete}
-                />
-              ))}
-              {receivedRequests.completed.map((request) => (
-                <RequestCard
-                  key={request.requestId}
-                  request={request}
-                  type="received"
-                  onAccept={handleAccept}
-                  onDecline={handleDecline}
-                  onComplete={handleComplete}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <p>No completed mentorships yet</p>
-              <small>Mark active mentorships as complete when finished</small>
-            </div>
-          )}
-        </section>
-
-        {/* Declined Requests (collapsible) */}
-        {(sentRequests.declined.length + receivedRequests.declined.length) > 0 && (
-          <section className="dashboard-section">
-            <details>
-              <summary className="section-title clickable">
-                ❌ Declined Requests ({sentRequests.declined.length + receivedRequests.declined.length})
-              </summary>
-              <div className="requests-grid" style={{ marginTop: '1rem' }}>
-                {sentRequests.declined.map((request) => (
-                  <RequestCard
-                    key={request.requestId}
-                    request={request}
-                    type="sent"
-                    onAccept={handleAccept}
-                    onDecline={handleDecline}
-                    onComplete={handleComplete}
-                  />
-                ))}
-                {receivedRequests.declined.map((request) => (
-                  <RequestCard
-                    key={request.requestId}
-                    request={request}
-                    type="received"
-                    onAccept={handleAccept}
-                    onDecline={handleDecline}
-                    onComplete={handleComplete}
-                  />
+          <h2>Received Requests</h2>
+          
+          {/* Pending Received */}
+          <div className="request-category">
+            <h3>Pending ({pendingReceived.length})</h3>
+            {pendingReceived.length > 0 ? (
+              <div className="requests-list">
+                {pendingReceived.map(request => (
+                  <div key={request.requestId} className="request-card pending">
+                    <div className="request-header">
+                      <div className="request-user">
+                        <div className="user-avatar">
+                          {request.sender.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h4>{request.sender.name}</h4>
+                          <p className="skill-tag">Wants to learn: {request.skill.skillName}</p>
+                        </div>
+                      </div>
+                      <span className="status-badge status-pending">Pending</span>
+                    </div>
+                    {request.message && (
+                      <p className="request-message">"{request.message}"</p>
+                    )}
+                    <div className="request-footer">
+                      <span className="request-date">
+                        {new Date(request.createdAt).toLocaleDateString()}
+                      </span>
+                      <RequestActions
+                        request={{
+                          id: request.requestId,
+                          senderId: request.sender.id,
+                          senderName: request.sender.name,
+                          receiverId: user.id,
+                          receiverName: user.name,
+                          skillId: request.skill.id,
+                          skillName: request.skill.skillName,
+                          status: request.status,
+                          message: request.message,
+                          createdAt: request.createdAt,
+                          updatedAt: request.updatedAt
+                        }}
+                        currentUserId={user.id}
+                        onActionComplete={handleActionComplete}
+                      />
+                    </div>
+                  </div>
                 ))}
               </div>
-            </details>
-          </section>
-        )}
+            ) : (
+              <p className="empty-message">No pending requests</p>
+            )}
+          </div>
 
+          {/* Active Mentorships (Received) */}
+          <div className="request-category">
+            <h3>Active Mentorships ({acceptedReceived.length})</h3>
+            {acceptedReceived.length > 0 ? (
+              <div className="requests-list">
+                {acceptedReceived.map(request => (
+                  <div key={request.requestId} className="request-card accepted">
+                    <div className="request-header">
+                      <div className="request-user">
+                        <div className="user-avatar">
+                          {request.sender.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h4>{request.sender.name}</h4>
+                          <p className="skill-tag">Learning: {request.skill.skillName}</p>
+                        </div>
+                      </div>
+                      <span className="status-badge status-accepted">Active</span>
+                    </div>
+                    <div className="request-footer">
+                      <span className="request-date">
+                        Started: {new Date(request.updatedAt).toLocaleDateString()}
+                      </span>
+                      <RequestActions
+                        request={{
+                          id: request.requestId,
+                          senderId: request.sender.id,
+                          senderName: request.sender.name,
+                          receiverId: user.id,
+                          receiverName: user.name,
+                          skillId: request.skill.id,
+                          skillName: request.skill.skillName,
+                          status: request.status,
+                          message: request.message,
+                          createdAt: request.createdAt,
+                          updatedAt: request.updatedAt
+                        }}
+                        currentUserId={user.id}
+                        onActionComplete={handleActionComplete}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-message">No active mentorships</p>
+            )}
+          </div>
+        </section>
+
+        {/* Sent Requests Section */}
+        <section className="dashboard-section">
+          <h2>My Requests</h2>
+          
+          {/* Pending Sent */}
+          <div className="request-category">
+            <h3>Pending ({pendingSent.length})</h3>
+            {pendingSent.length > 0 ? (
+              <div className="requests-list">
+                {pendingSent.map(request => (
+                  <div key={request.requestId} className="request-card pending">
+                    <div className="request-header">
+                      <div className="request-user">
+                        <div className="user-avatar">
+                          {request.receiver.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h4>{request.receiver.name}</h4>
+                          <p className="skill-tag">Skill: {request.skill.skillName}</p>
+                        </div>
+                      </div>
+                      <span className="status-badge status-pending">Pending</span>
+                    </div>
+                    {request.message && (
+                      <p className="request-message">"{request.message}"</p>
+                    )}
+                    <div className="request-footer">
+                      <span className="request-date">
+                        Sent: {new Date(request.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-message">No pending requests</p>
+            )}
+          </div>
+
+          {/* Active Mentorships (Sent) */}
+          <div className="request-category">
+            <h3>Active Learning ({acceptedSent.length})</h3>
+            {acceptedSent.length > 0 ? (
+              <div className="requests-list">
+                {acceptedSent.map(request => (
+                  <div key={request.requestId} className="request-card accepted">
+                    <div className="request-header">
+                      <div className="request-user">
+                        <div className="user-avatar">
+                          {request.receiver.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h4>{request.receiver.name}</h4>
+                          <p className="skill-tag">Learning: {request.skill.skillName}</p>
+                        </div>
+                      </div>
+                      <span className="status-badge status-accepted">Active</span>
+                    </div>
+                    <div className="request-footer">
+                      <span className="request-date">
+                        Started: {new Date(request.updatedAt).toLocaleDateString()}
+                      </span>
+                      <RequestActions
+                        request={{
+                          id: request.requestId,
+                          senderId: user.id,
+                          senderName: user.name,
+                          receiverId: request.receiver.id,
+                          receiverName: request.receiver.name,
+                          skillId: request.skill.id,
+                          skillName: request.skill.skillName,
+                          status: request.status,
+                          message: request.message,
+                          createdAt: request.createdAt,
+                          updatedAt: request.updatedAt
+                        }}
+                        currentUserId={user.id}
+                        onActionComplete={handleActionComplete}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-message">No active learning sessions</p>
+            )}
+          </div>
+        </section>
       </div>
-
-      {/* Loading Overlay */}
-      {actionLoading && (
-        <div className="loading-overlay">
-          <div className="spinner"></div>
-        </div>
-      )}
     </div>
   );
 };
