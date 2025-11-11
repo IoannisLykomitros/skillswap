@@ -4,15 +4,16 @@ const { pool } = require('../config/database');
  * Get all available skills in the system
  * GET /api/skills
  * Query params (optional):
- *   - category: Filter by category (e.g., ?category=Programming)
- *   - search: Search by skill name (e.g., ?search=java)
+ *   - category: Filter by category
+ *   - search: Search by skill name
+ *   - include_users: Include users who offer each skill (true/false)
  *   - limit: Max number of results (default 100)
  *   - offset: Pagination offset (default 0)
  * Public route
  */
 const getAllSkills = async (req, res) => {
   try {
-    const { category, search, limit = 100, offset = 0 } = req.query;
+    const { category, search, include_users, limit = 100, offset = 0 } = req.query;
 
     let limitNum = parseInt(limit);
     if (isNaN(limitNum) || limitNum <= 0) {
@@ -32,80 +33,148 @@ const getAllSkills = async (req, res) => {
       });
     }
 
-    let whereConditions = [];
-    let queryParams = [];
-    let paramCount = 1;
+    const includeUsers = include_users === 'true';
 
-    if (category) {
-      whereConditions.push(`category = $${paramCount}`);
-      queryParams.push(category);
-      paramCount++;
-    }
+    if (includeUsers) {
+      let whereConditions = [];
+      let queryParams = [];
+      let paramCount = 1;
 
-    if (search) {
-      whereConditions.push(`skill_name ILIKE $${paramCount}`);
-      queryParams.push(`%${search}%`);
-      paramCount++;
-    }
-
-    const whereClause = whereConditions.length > 0 
-      ? `WHERE ${whereConditions.join(' AND ')}` 
-      : '';
-
-    const countQuery = `
-      SELECT COUNT(*) as total
-      FROM skills
-      ${whereClause}
-    `;
-
-    const countResult = await pool.query(countQuery, queryParams);
-    const totalCount = parseInt(countResult.rows[0].total);
-
-    const skillsQuery = `
-      SELECT 
-        id,
-        skill_name,
-        category,
-        description,
-        created_at
-      FROM skills
-      ${whereClause}
-      ORDER BY skill_name ASC
-      LIMIT $${paramCount}
-      OFFSET $${paramCount + 1}
-    `;
-
-    const finalParams = [...queryParams, limitNum, offsetNum];
-    const skillsResult = await pool.query(skillsQuery, finalParams);
-    const skills = skillsResult.rows;
-
-    const totalPages = Math.ceil(totalCount / limitNum);
-    const currentPage = Math.floor(offsetNum / limitNum) + 1;
-    const hasNextPage = currentPage < totalPages;
-    const hasPreviousPage = currentPage > 1;
-
-    res.status(200).json({
-      success: true,
-      message: 'Skills retrieved successfully',
-      data: {
-        skills: skills.map(skill => ({
-          id: skill.id,
-          skillName: skill.skill_name,
-          category: skill.category,
-          description: skill.description,
-          createdAt: skill.created_at
-        })),
-        pagination: {
-          total: totalCount,
-          limit: limitNum,
-          offset: offsetNum,
-          currentPage: currentPage,
-          totalPages: totalPages,
-          hasNextPage: hasNextPage,
-          hasPreviousPage: hasPreviousPage
-        }
+      if (category) {
+        whereConditions.push(`s.category = $${paramCount}`);
+        queryParams.push(category);
+        paramCount++;
       }
-    });
+
+      if (search) {
+        whereConditions.push(`s.skill_name ILIKE $${paramCount}`);
+        queryParams.push(`%${search}%`);
+        paramCount++;
+      }
+
+      const whereClause = whereConditions.length > 0 
+        ? `WHERE ${whereConditions.join(' AND ')}` 
+        : '';
+
+      const skillsQuery = `
+        SELECT 
+          s.id,
+          s.skill_name AS "skillName",
+          s.category,
+          s.description,
+          COALESCE(
+            json_agg(
+              json_build_object(
+                'userId', u.id,
+                'userName', u.name,
+                'proficiencyLevel', us.proficiency_level
+              ) ORDER BY 
+                CASE 
+                  WHEN us.proficiency_level = 'advanced' THEN 1
+                  WHEN us.proficiency_level = 'intermediate' THEN 2
+                  WHEN us.proficiency_level = 'beginner' THEN 3
+                  ELSE 4
+                END
+            ) FILTER (WHERE us.type = 'offer' AND u.id IS NOT NULL),
+            '[]'::json
+          ) AS users
+        FROM skills s
+        LEFT JOIN user_skills us ON s.id = us.skill_id AND us.type = 'offer'
+        LEFT JOIN users u ON us.user_id = u.id
+        ${whereClause}
+        GROUP BY s.id, s.skill_name, s.category, s.description
+        ORDER BY s.category, s.skill_name ASC
+        LIMIT $${paramCount}
+        OFFSET $${paramCount + 1}
+      `;
+
+      const finalParams = [...queryParams, limitNum, offsetNum];
+      const skillsResult = await pool.query(skillsQuery, finalParams);
+
+      res.status(200).json({
+        success: true,
+        message: 'Skills retrieved successfully',
+        data: {
+          skills: skillsResult.rows
+        }
+      });
+
+    } else {
+      let whereConditions = [];
+      let queryParams = [];
+      let paramCount = 1;
+
+      if (category) {
+        whereConditions.push(`category = $${paramCount}`);
+        queryParams.push(category);
+        paramCount++;
+      }
+
+      if (search) {
+        whereConditions.push(`skill_name ILIKE $${paramCount}`);
+        queryParams.push(`%${search}%`);
+        paramCount++;
+      }
+
+      const whereClause = whereConditions.length > 0 
+        ? `WHERE ${whereConditions.join(' AND ')}` 
+        : '';
+
+      const countQuery = `
+        SELECT COUNT(*) as total
+        FROM skills
+        ${whereClause}
+      `;
+
+      const countResult = await pool.query(countQuery, queryParams);
+      const totalCount = parseInt(countResult.rows[0].total);
+
+      const skillsQuery = `
+        SELECT 
+          id,
+          skill_name,
+          category,
+          description,
+          created_at
+        FROM skills
+        ${whereClause}
+        ORDER BY skill_name ASC
+        LIMIT $${paramCount}
+        OFFSET $${paramCount + 1}
+      `;
+
+      const finalParams = [...queryParams, limitNum, offsetNum];
+      const skillsResult = await pool.query(skillsQuery, finalParams);
+      const skills = skillsResult.rows;
+
+      const totalPages = Math.ceil(totalCount / limitNum);
+      const currentPage = Math.floor(offsetNum / limitNum) + 1;
+      const hasNextPage = currentPage < totalPages;
+      const hasPreviousPage = currentPage > 1;
+
+      res.status(200).json({
+        success: true,
+        message: 'Skills retrieved successfully',
+        data: {
+          skills: skills.map(skill => ({
+            id: skill.id,
+            skillName: skill.skill_name,
+            category: skill.category,
+            description: skill.description,
+            createdAt: skill.created_at
+          })),
+          pagination: {
+            total: totalCount,
+            limit: limitNum,
+            offset: offsetNum,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            hasNextPage: hasNextPage,
+            hasPreviousPage: hasPreviousPage
+          }
+        }
+      });
+    }
 
   } catch (error) {
     console.error('Get all skills error:', error);
@@ -116,6 +185,7 @@ const getAllSkills = async (req, res) => {
     });
   }
 };
+
 
 /**
  * Get all skills (offered and wanted) for a specific user

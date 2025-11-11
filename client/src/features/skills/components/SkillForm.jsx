@@ -81,10 +81,7 @@ const SkillForm = ({ allSkills, onSubmit, loading = false }) => {
   };
 
   const skillsByCategory = getSkillsByCategory();
-
-console.log('All skills:', allSkills);
-console.log('Skills by category:', skillsByCategory);
-
+  
   return (
     <div className="skill-form-container">
       <h3>Add a New Skill</h3>
