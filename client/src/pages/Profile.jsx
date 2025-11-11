@@ -1,16 +1,12 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import useProfile from '../features/profile/hooks/useProfile';
+import SkillBadge from '../features/skills/components/SkillBadge';
+import './Profile.css';
 
 const Profile = () => {
   const { userId } = useParams();
   const { loading, error, profile, skills } = useProfile(userId);
-
-  console.log('userId from URL:', userId);
-  console.log('loading:', loading);
-  console.log('error:', error);
-  console.log('profile:', profile);
-  console.log('skills:', skills);
 
   if (loading) {
     return (
@@ -36,36 +32,75 @@ const Profile = () => {
   if (!profile) {
     return (
       <div className="profile-page">
-        <p>Profile not found (profile is null or undefined)</p>
-        <p>userId from URL: {userId}</p>
+        <div className="empty-state">
+          <h2>Profile not found</h2>
+          <p>The user you're looking for doesn't exist.</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="profile-page">
-      <h1>Profile of {profile.name}</h1>
-      <p>Email: {profile.email}</p>
-      {profile.bio && <p>Bio: {profile.bio}</p>}
-      {profile.location && <p>Location: {profile.location}</p>}
-      
-      <h2>Skills Offered ({skills.offered.length})</h2>
-      <ul>
-        {skills.offered.map((skill) => (
-          <li key={skill.userSkillId}>
-            {skill.skillName} - {skill.proficiencyLevel}
-          </li>
-        ))}
-      </ul>
+      <div className="profile-container">
+        <div className="profile-header">
+          <div className="profile-avatar">
+            {profile.name.charAt(0).toUpperCase()}
+          </div>
+          <div className="profile-info">
+            <h1>{profile.name}</h1>
+            <p className="profile-email">{profile.email}</p>
+            {profile.location && (
+              <p className="profile-location">📍 {profile.location}</p>
+            )}
+          </div>
+        </div>
 
-      <h2>Skills Wanted ({skills.wanted.length})</h2>
-      <ul>
-        {skills.wanted.map((skill) => (
-          <li key={skill.userSkillId}>
-            {skill.skillName}
-          </li>
-        ))}
-      </ul>
+        {profile.bio && (
+          <div className="profile-bio">
+            <h3>About</h3>
+            <p>{profile.bio}</p>
+          </div>
+        )}
+
+        <div className="profile-skills">
+          <div className="skills-section">
+            <h3>Skills Offered ({skills.offered.length})</h3>
+            {skills.offered.length > 0 ? (
+              <div className="skills-list">
+                {skills.offered.map((skill) => (
+                  <SkillBadge
+                    key={skill.userSkillId}
+                    skill={skill}
+                    type="offer"
+                    showLevel={true}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="no-skills">No skills offered yet</p>
+            )}
+          </div>
+
+          <div className="skills-section">
+            <h3>Skills Wanted ({skills.wanted.length})</h3>
+            {skills.wanted.length > 0 ? (
+              <div className="skills-list">
+                {skills.wanted.map((skill) => (
+                  <SkillBadge
+                    key={skill.userSkillId}
+                    skill={skill}
+                    type="want"
+                    showLevel={false}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="no-skills">No skills wanted yet</p>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
