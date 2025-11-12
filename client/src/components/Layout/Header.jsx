@@ -27,7 +27,7 @@ const Header = () => {
       <div className="header-container">
         {/* Logo */}
         <Link to="/" className="logo" onClick={closeMobileMenu}>
-          <span className="logo-icon">🔄</span>
+          {/* <span className="logo-icon">🔄</span> */}
           <span className="logo-text">SkillSwap</span>
         </Link>
 
@@ -63,7 +63,7 @@ const Header = () => {
           <div className="nav-auth">
             {isAuthenticated() ? (
               <div className="user-menu">
-                <span className="user-name">Hi, {user?.name?.split(' ')[0]}</span>
+                {/* <span className="user-name">Hi, {user?.name?.split(' ')[0]}</span> */}
                 <button onClick={handleLogout} className="btn btn-secondary btn-sm">
                   Logout
                 </button>

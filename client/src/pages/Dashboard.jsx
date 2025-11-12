@@ -110,9 +110,9 @@ const Dashboard = () => {
             <p className="welcome-text">Welcome back, <strong>{user.name}</strong>!</p>
           )}
         </div>
-        <button onClick={handleLogout} className="btn btn-secondary">
+        {/* <button onClick={handleLogout} className="btn btn-secondary">
           Logout
-        </button>
+        </button> */}
       </div>
 
       {/* Success Message */}

@@ -24,3 +24,12 @@ export const removeUserSkill = async (userSkillId) => {
   const response = await api.delete(`/skills/user/${userSkillId}`);
   return response.data;
 };
+
+export const getTopSkills = async (limit = 8) => {
+  try {
+    const response = await api.get(`/skills/top?limit=${limit}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

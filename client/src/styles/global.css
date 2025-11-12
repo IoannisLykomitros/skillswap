@@ -130,8 +130,9 @@ p {
 
 a {
   color: var(--primary-500);
-  text-decoration: none;
+  text-decoration: none !important;
   transition: color var(--transition-base);
+  
 }
 
 a:hover {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
-const { getAllSkills, getUserSkills, addUserSkill, removeUserSkill } = require('../controllers/skillController');
+const { getAllSkills, getUserSkills, addUserSkill, removeUserSkill, getTopSkills } = require('../controllers/skillController');
 const { validateAddUserSkill, validateIdParam } = require('../middleware/validation');
 
 // Controllers will be imported here (we'll create them next)
@@ -25,6 +25,8 @@ router.get('/', getAllSkills);
  */
 router.get('/user/:userId', validateIdParam('userId'), getUserSkills);
 
+router.get('/top', getTopSkills);
+
 /**
  * POST /api/skills/user
  * Add a skill to current user's profile
@@ -42,5 +44,6 @@ router.post('/user', authenticateToken, validateAddUserSkill, addUserSkill);
  * Protected route (authentication required)
  */
 router.delete('/user/:userSkillId', authenticateToken, validateIdParam('userSkillId'), removeUserSkill);
+
 
 module.exports = router;

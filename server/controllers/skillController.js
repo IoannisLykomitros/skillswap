@@ -186,6 +186,41 @@ const getAllSkills = async (req, res) => {
   }
 };
 
+const getTopSkills = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 8;
+
+    const query = `
+      SELECT 
+        s.id,
+        s.skill_name,
+        s.category,
+        COUNT(DISTINCT us.user_id) as mentor_count
+      FROM skills s
+      LEFT JOIN user_skills us ON s.id = us.skill_id AND us.type = 'offer'
+      GROUP BY s.id, s.skill_name, s.category
+      HAVING COUNT(DISTINCT us.user_id) > 0
+      ORDER BY mentor_count DESC, s.skill_name ASC
+      LIMIT $1
+    `;
+
+    const result = await pool.query(query, [limit]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        skills: result.rows
+      }
+    });
+  } catch (error) {
+    console.error('Get top skills error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving top skills'
+    });
+  }
+};
+
 
 /**
  * Get all skills (offered and wanted) for a specific user
@@ -474,4 +509,4 @@ const removeUserSkill = async (req, res) => {
   }
 };
 
-module.exports = { getAllSkills, getUserSkills, addUserSkill, removeUserSkill };
+module.exports = { getAllSkills, getUserSkills, addUserSkill, removeUserSkill, getTopSkills };
