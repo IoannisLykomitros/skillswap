@@ -32,12 +32,16 @@
 
   /* Colors - Semantic */
   --success-500: #48bb78;
+  --success-400: #ffffff;
   --success-100: #c6f6d5;
   --error-500: #f56565;
+  --error-400: #ffffff;
   --error-100: #fed7d7;
   --warning-500: #ed8936;
+  --warning-400: #ffffff;
   --warning-100: #feebc8;
   --info-500: #4299e1;
+  --info-400: #ffffff;
   --info-100: #bee3f8;
 
   /* Typography */
@@ -105,7 +109,7 @@ body {
   font-size: var(--text-base);
   line-height: 1.6;
   color: var(--gray-800);
-  background-color: var(--gray-50);
+  background-color: var(--gray-900);
   min-height: 100vh;
 }
 
@@ -170,6 +174,7 @@ a:hover {
 .btn-primary:hover:not(:disabled) {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
   transform: translateY(-2px);
+  color: white;
 }
 
 .btn-secondary {
@@ -236,10 +241,10 @@ select {
   padding: var(--space-3);
   font-size: var(--text-base);
   font-family: inherit;
-  border: 2px solid var(--gray-300);
+  /* border: 2px solid var(--gray-300); */
   border-radius: var(--radius-md);
   transition: border-color var(--transition-base);
-  background-color: white;
+  /* background-color: white; */
 }
 
 input:focus,

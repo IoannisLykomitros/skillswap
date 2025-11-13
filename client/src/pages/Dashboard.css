@@ -14,25 +14,30 @@
   margin-bottom: var(--space-8);
   flex-wrap: wrap;
   gap: var(--space-4);
+
 }
 
 .dashboard-header h1 {
   margin: 0 0 var(--space-2) 0;
   font-size: var(--text-3xl);
-  color: var(--gray-900);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .welcome-text {
   margin: 0;
-  color: var(--gray-600);
+  color: var(--gray-400);
   font-size: var(--text-base);
 }
 
 /* Success Message */
 .success-message {
-  background-color: var(--success-100);
-  border: 1px solid var(--success-500);
-  color: var(--success-500);
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--success-400);
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-6);
@@ -48,7 +53,7 @@
 .success-dismiss {
   background: none;
   border: none;
-  color: var(--success-500);
+  color: var(--success-400);
   font-size: var(--text-2xl);
   cursor: pointer;
   padding: 0;
@@ -64,14 +69,14 @@
 }
 
 .success-dismiss:hover {
-  background-color: rgba(46, 125, 50, 0.15);
+  background-color: rgba(16, 185, 129, 0.2);
 }
 
 /* Error Message */
 .error-message {
-  background-color: var(--error-100);
-  border: 1px solid var(--error-500);
-  color: var(--error-500);
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: var(--error-400);
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-6);
@@ -87,7 +92,7 @@
 .error-dismiss {
   background: none;
   border: none;
-  color: var(--error-500);
+  color: var(--error-400);
   font-size: var(--text-2xl);
   cursor: pointer;
   padding: 0;
@@ -103,7 +108,7 @@
 }
 
 .error-dismiss:hover {
-  background-color: rgba(245, 101, 101, 0.15);
+  background-color: rgba(239, 68, 68, 0.2);
 }
 
 /* Dashboard Content */
@@ -113,24 +118,29 @@
   gap: var(--space-8);
 }
 
-/* Dashboard Section */
+/* Dashboard Section - Dark cards */
 .dashboard-section {
-  background: white;
-  border-radius: var(--radius-lg);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-xl);
   padding: var(--space-8);
-  box-shadow: var(--shadow-md);
-  transition: box-shadow var(--transition-base);
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-base);
 }
 
 .dashboard-section:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .dashboard-section h2 {
   margin: 0 0 var(--space-6) 0;
   font-size: var(--text-2xl);
-  color: var(--gray-900);
-  border-bottom: 3px solid var(--primary-500);
+  color: var(--gray-100);
+  font-weight: 700;
+  border-bottom: 3px solid;
+  border-image: linear-gradient(90deg, var(--primary-500), var(--secondary-500)) 1;
   padding-bottom: var(--space-3);
 }
 
@@ -146,7 +156,7 @@
 .request-category h3 {
   margin: 0 0 var(--space-4) 0;
   font-size: var(--text-lg);
-  color: var(--gray-700);
+  color: var(--gray-300);
   font-weight: 600;
 }
 
@@ -157,18 +167,19 @@
   gap: var(--space-4);
 }
 
-/* Request Card */
+/* Request Card - Dark with borders */
 .request-card {
-  border: 2px solid var(--gray-200);
+  border: 2px solid rgba(71, 85, 105, 0.4);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   transition: all var(--transition-base);
-  background: white;
+  background: rgba(15, 23, 42, 0.4);
 }
 
 .request-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 .request-card.pending {
@@ -213,12 +224,12 @@
 .request-user h4 {
   margin: 0 0 var(--space-1) 0;
   font-size: var(--text-lg);
-  color: var(--gray-900);
+  color: var(--gray-100);
 }
 
 .skill-tag {
   margin: 0;
-  color: var(--primary-600);
+  color: var(--gray-500);
   font-size: var(--text-sm);
   font-weight: 500;
 }
@@ -235,23 +246,26 @@
 }
 
 .status-pending {
-  background-color: var(--warning-100);
-  color: var(--warning-500);
+  background-color: rgba(245, 158, 11, 0.2);
+  color: var(--gray-400);
+  /* color: white; */
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .status-accepted {
-  background-color: var(--success-100);
-  color: var(--success-500);
+  background-color: rgba(16, 185, 129, 0.2);
+  color: var(--gray-400);
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 /* Request Message */
 .request-message {
   margin: 0 0 var(--space-4) 0;
   padding: var(--space-3) var(--space-4);
-  background-color: var(--gray-50);
+  background-color: rgba(15, 23, 42, 0.5);
   border-left: 3px solid var(--primary-500);
   border-radius: var(--radius-md);
-  color: var(--gray-700);
+  color: var(--gray-300);
   font-style: italic;
   font-size: var(--text-sm);
   line-height: 1.6;
@@ -264,7 +278,7 @@
   align-items: center;
   gap: var(--space-4);
   padding-top: var(--space-4);
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid rgba(71, 85, 105, 0.3);
   flex-wrap: wrap;
 }
 
@@ -279,9 +293,9 @@
   font-style: italic;
   text-align: center;
   padding: var(--space-8);
-  background-color: var(--gray-50);
+  background-color: rgba(15, 23, 42, 0.4);
   border-radius: var(--radius-md);
-  border: 2px dashed var(--gray-300);
+  border: 2px dashed rgba(71, 85, 105, 0.5);
   margin: 0;
 }
 
@@ -296,7 +310,7 @@
 }
 
 .loading-spinner p {
-  color: var(--gray-600);
+  color: var(--gray-400);
   font-size: var(--text-lg);
   font-weight: 500;
   margin: 0;
@@ -316,7 +330,7 @@
 
   .dashboard-header {
     flex-direction: column;
-    /* align-items: flex-start; */
+    align-items: center;
   }
 
   .dashboard-header h1 {

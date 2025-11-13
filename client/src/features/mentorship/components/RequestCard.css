@@ -1,33 +1,36 @@
 /* Request Card Container */
 .request-card {
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s, transform 0.3s;
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
   border-left: 4px solid transparent;
+  border: 1px solid rgba(71, 85, 105, 0.3);
 }
 
 .request-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 /* Status Colors */
 .request-card.status-pending {
-  border-left-color: #ff9800;
+  border-left: 4px solid var(--warning-500);
 }
 
 .request-card.status-accepted {
-  border-left-color: #4caf50;
+  border-left: 4px solid var(--success-500);
 }
 
 .request-card.status-declined {
-  border-left-color: #f44336;
+  border-left: 4px solid var(--error-500);
 }
 
 .request-card.status-completed {
-  border-left-color: #2196f3;
+  border-left: 4px solid var(--info-500);
 }
 
 /* Request Header */
@@ -35,130 +38,138 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid rgba(71, 85, 105, 0.3);
 }
 
 .request-user {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   align-items: center;
 }
 
 .user-avatar {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: var(--text-xl);
+  font-weight: 700;
   flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .user-info h4 {
-  margin: 0 0 0.25rem 0;
-  font-size: 1.1rem;
-  color: #333;
+  margin: 0 0 var(--space-1) 0;
+  font-size: var(--text-lg);
+  color: var(--gray-100);
 }
 
 .user-email {
   margin: 0;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: var(--text-sm);
+  color: var(--gray-400);
 }
 
 /* Status Badge */
 .status-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: capitalize;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status-badge.status-pending {
-  background-color: #fff3e0;
-  color: #ff9800;
+  background-color: rgba(245, 158, 11, 0.2);
+  color: var(--warning-400);
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .status-badge.status-accepted {
-  background-color: #e8f5e9;
-  color: #4caf50;
+  background-color: rgba(16, 185, 129, 0.2);
+  color: var(--success-400);
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .status-badge.status-declined {
-  background-color: #ffebee;
-  color: #f44336;
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--error-400);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .status-badge.status-completed {
-  background-color: #e3f2fd;
-  color: #2196f3;
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--info-400);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 /* Request Body */
 .request-body {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .skill-info {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
   flex-wrap: wrap;
 }
 
 .skill-label {
   font-weight: 600;
-  color: #666;
+  color: var(--gray-400);
+  font-size: var(--text-sm);
 }
 
 .skill-name {
   font-weight: 600;
-  color: #333;
-  font-size: 1.05rem;
+  color: var(--gray-100);
+  font-size: var(--text-lg);
 }
 
 .skill-category {
-  color: #999;
-  font-size: 0.9rem;
+  color: var(--gray-500);
+  font-size: var(--text-sm);
 }
 
 /* Message */
 .request-message {
-  background-color: #f9f9f9;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
+  background-color: rgba(15, 23, 42, 0.5);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--primary-500);
+  margin-bottom: var(--space-4);
 }
 
 .message-label {
   font-weight: 600;
-  color: #666;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  color: var(--gray-400);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
 }
 
 .message-text {
   margin: 0;
-  color: #333;
+  color: var(--gray-300);
   font-style: italic;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* Request Meta */
 .request-meta {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   flex-wrap: wrap;
-  font-size: 0.85rem;
-  color: #999;
+  font-size: var(--text-xs);
+  color: var(--gray-500);
 }
 
 .request-date,
@@ -170,36 +181,27 @@
 /* Request Actions */
 .request-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid #e0e0e0;
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(71, 85, 105, 0.3);
 }
 
 .waiting-text {
-  color: #ff9800;
+  color: var(--warning-400);
   font-style: italic;
-  font-size: 0.9rem;
-}
-
-.btn-success {
-  background-color: #4caf50;
-  color: white;
-}
-
-.btn-success:hover {
-  background-color: #45a049;
+  font-size: var(--text-sm);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .request-card {
-    padding: 1rem;
+    padding: var(--space-4);
   }
 
   .request-header {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--space-4);
   }
 
   .status-badge {

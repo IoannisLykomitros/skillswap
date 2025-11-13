@@ -132,7 +132,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats Section
       <section className="stats-section">
         <h2 className="section-title">Join Our Growing Community</h2>
         <div className="stats-grid">
@@ -149,7 +149,7 @@ const Home = () => {
             <div className="stat-label">Connections Made</div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Call to Action Section */}
       {!isAuthenticated() && (

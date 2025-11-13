@@ -7,17 +7,22 @@
 
 .edit-profile-header {
   margin-bottom: 2rem;
+  text-align: center;
 }
 
 .edit-profile-header h1 {
   margin: 0 0 0.5rem 0;
   font-size: 2rem;
-  color: #333;
+  /* color: #333; */
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .edit-profile-header p {
   margin: 0;
-  color: #666;
+  color: var(--gray-500);
   font-size: 1rem;
 }
 

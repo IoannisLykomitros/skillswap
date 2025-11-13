@@ -1,6 +1,6 @@
 /* Profile Edit Form Container */
 .profile-edit-form-container {
-  background: white;
+  /* background: white; */
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 2rem;
@@ -28,7 +28,7 @@
 .form-group textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e0e0e0;
+  /* border: 2px solid #e0e0e0; */
   border-radius: 6px;
   font-size: 1rem;
   font-family: inherit;
@@ -43,7 +43,7 @@
 
 .form-group input:disabled,
 .form-group textarea:disabled {
-  background-color: #f5f5f5;
+  /* background-color: #f5f5f5; */
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -115,8 +115,8 @@
 .form-actions {
   display: flex;
   gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  /* margin-top: 1rem; */
+  /* padding-top: 1.5rem; */
   border-top: 1px solid #e0e0e0;
 }
 

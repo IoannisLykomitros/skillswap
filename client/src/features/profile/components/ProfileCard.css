@@ -1,87 +1,122 @@
-/* Profile Card Container */
+/* Profile Card Container - Dark elevated card */
 .profile-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   overflow: hidden;
+  transition: all var(--transition-base);
 }
 
-/* Profile Card Header */
+.profile-card:hover {
+  box-shadow: var(--shadow-2xl);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* Profile Card Header - Keep gradient but enhance */
 .profile-card-header {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  gap: var(--space-6);
+  padding: var(--space-8);
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add subtle pattern to header */
+.profile-card-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(at 30% 50%, rgba(255, 255, 255, 0.1) 0, transparent 50%),
+    radial-gradient(at 70% 50%, rgba(255, 255, 255, 0.1) 0, transparent 50%);
+  pointer-events: none;
 }
 
 .profile-card-avatar {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background-color: white;
-  color: #667eea;
+  color: var(--primary-500);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
   font-weight: 700;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .profile-card-info {
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .profile-card-name {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.75rem;
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-3xl);
   font-weight: 700;
   color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .profile-card-email {
-  margin: 0 0 0.25rem 0;
-  opacity: 0.9;
-  font-size: 0.95rem;
+  margin: 0 0 var(--space-1) 0;
+  opacity: 0.95;
+  font-size: var(--text-base);
   color: white;
 }
 
 .profile-card-location {
   margin: 0;
   opacity: 0.9;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: white;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
-/* Bio Section */
+/* Bio Section - Dark background */
 .profile-card-bio {
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid #e0e0e0;
+  padding: var(--space-6) var(--space-8);
+  border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+  background: rgba(15, 23, 42, 0.3);
 }
 
 .profile-card-bio h4 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.1rem;
-  color: #333;
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-lg);
+  color: var(--gray-100);
   font-weight: 600;
 }
 
 .profile-card-bio p {
   margin: 0;
   line-height: 1.6;
-  color: #666;
+  color: var(--gray-300);
+  font-size: var(--text-base);
 }
 
-/* Skills Section */
+/* Skills Section - Dark background */
 .profile-card-skills {
-  padding: 1.5rem 2rem;
+  padding: var(--space-6) var(--space-8);
+  background: rgba(15, 23, 42, 0.2);
 }
 
 .skill-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
 }
 
 .skill-group:last-child {
@@ -89,30 +124,33 @@
 }
 
 .skill-group h4 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.1rem;
-  color: #333;
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-lg);
+  color: var(--gray-100);
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .skill-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .no-skills-text {
-  color: #999;
+  color: var(--gray-500);
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   margin: 0;
 }
 
-/* Actions */
+/* Actions - Dark background with subtle highlight */
 .profile-card-actions {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid #e0e0e0;
-  background-color: #f9f9f9;
+  padding: var(--space-6) var(--space-8);
+  border-top: 1px solid rgba(71, 85, 105, 0.3);
+  background: rgba(15, 23, 42, 0.4);
 }
 
 /* Responsive */
@@ -120,7 +158,7 @@
   .profile-card-header {
     flex-direction: column;
     text-align: center;
-    padding: 1.5rem;
+    padding: var(--space-6);
   }
 
   .profile-card-avatar {
@@ -130,12 +168,16 @@
   }
 
   .profile-card-name {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
+  }
+
+  .profile-card-location {
+    justify-content: center;
   }
 
   .profile-card-bio,
   .profile-card-skills,
   .profile-card-actions {
-    padding: 1.25rem 1.5rem;
+    padding: var(--space-5) var(--space-6);
   }
 }

@@ -1,11 +1,11 @@
 /* Header Container */
 .header {
-  background: white;
+  background: var(--gray-900);
   box-shadow: var(--shadow-md);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-900);
 }
 
 .header-container {
@@ -27,7 +27,9 @@
 }
 
 .logo:hover {
-  transform: scale(1.03);
+  transform: scale(1.13);
+  filter: brightness(1.1);
+
 }
 
 .logo-icon {
@@ -53,7 +55,7 @@
 .nav-link {
   padding: var(--space-2) var(--space-4);
   font-weight: 500;
-  color: var(--gray-700);
+  color: var(--gray-200);
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
   font-size: var(--text-base);
@@ -61,8 +63,9 @@
 }
 
 .nav-link:hover {
-  background-color: var(--primary-50);
+  /* background-color: var(--primary-50); */
   color: var(--primary-600);
+  font-size: var(--text-lg);
 }
 
 /* Nav Auth Section */
@@ -101,7 +104,8 @@
 }
 
 .mobile-menu-btn:hover {
-  background-color: var(--gray-100);
+  transform: scale(1.1);
+  /* background-color: var(--primary-600); */
 }
 
 /* Hamburger Icon */
@@ -159,7 +163,7 @@
     top: 65px;
     left: 0;
     right: 0;
-    background: white;
+    background: var(--gray-800);
     flex-direction: column;
     align-items: stretch;
     gap: 0;
@@ -182,7 +186,7 @@
   .nav-link {
     padding: var(--space-3) var(--space-4);
     text-align: center;
-    border-bottom: 1px solid var(--gray-200);
+    /* border-bottom: 1px solid var(--gray-200); */
   }
 
   .nav-link:last-child {

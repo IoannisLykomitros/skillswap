@@ -11,9 +11,15 @@
   justify-content: center;
   text-align: center;
   padding: var(--space-16) var(--space-6);
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--gray-50) 100%);
+  /* background: linear-gradient(135deg, var(--primary-50) 0%, var(--gray-50) 100%); */
+  background-image: 
+    radial-gradient(at 30% 50%, rgba(99, 102, 241, 0.1) 0, transparent 50%),
+    radial-gradient(at 70% 50%, rgba(139, 92, 246, 0.1) 0, transparent 50%);
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-16);
 }
 
 .hero-content {
@@ -59,13 +65,17 @@
   text-align: center;
   font-size: var(--text-3xl);
   margin-bottom: var(--space-4);
-  color: var(--gray-900);
+  /* color: var(--gray-50); */
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .section-subtitle {
   text-align: center;
   font-size: var(--text-lg);
-  color: var(--gray-600);
+  color: var(--gray-300);
   margin-bottom: var(--space-10);
   max-width: 600px;
   margin-left: auto;
@@ -83,10 +93,14 @@
 .feature-card {
   text-align: center;
   padding: var(--space-8);
-  background: white;
+  /* background: white; */
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   transition: all var(--transition-base);
+  cursor: default;
+  background-image: 
+    radial-gradient(at 30% 50%, rgba(99, 102, 241, 0.1) 0, transparent 50%),
+    radial-gradient(at 70% 50%, rgba(139, 92, 246, 0.1) 0, transparent 50%);
 }
 
 .feature-card:hover {
@@ -102,18 +116,21 @@
 .feature-card h3 {
   font-size: var(--text-xl);
   margin-bottom: var(--space-3);
-  color: var(--gray-900);
+  color: var(--gray-500);
 }
 
 .feature-card p {
-  color: var(--gray-600);
+  color: var(--gray-300);
   line-height: 1.6;
   margin: 0;
 }
 
 /* Skills Preview Section */
 .skills-preview-section {
-  background-color: var(--gray-50);
+  /* background-color: var(--gray-50); */
+  background-image: 
+    radial-gradient(at 30% 50%, rgba(99, 102, 241, 0.1) 0, transparent 50%),
+    radial-gradient(at 70% 50%, rgba(139, 92, 246, 0.1) 0, transparent 50%);
 }
 
 .skills-loading {
@@ -138,8 +155,8 @@
 }
 
 .skill-preview-card {
-  background: white;
-  border: 2px solid var(--gray-200);
+  /* background: white; */
+  border: 2px solid var(--gray-800);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   text-align: center;
@@ -158,8 +175,8 @@
 
 .skill-preview-card h4 {
   margin: 0;
-  color: var(--gray-900);
-  font-size: var(--text-lg);
+  color: var(--gray-300);
+  font-size: var(--text-2xl);
 }
 
 .skill-category {
@@ -224,20 +241,27 @@
 /* Final CTA Section */
 .cta-section {
   text-align: center;
-  background-color: var(--primary-50);
+  /* background-color: var(--primary-50); */
   border-radius: var(--radius-xl);
   padding: var(--space-16) var(--space-8);
+  background-image: 
+    radial-gradient(at 30% 50%, rgba(99, 102, 241, 0.1) 0, transparent 50%),
+    radial-gradient(at 70% 50%, rgba(139, 92, 246, 0.1) 0, transparent 50%);
 }
 
 .cta-section h2 {
   font-size: var(--text-3xl);
-  color: var(--gray-900);
+  /* color: var(--gray-300); */
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: var(--space-4);
 }
 
 .cta-section p {
   font-size: var(--text-lg);
-  color: var(--gray-600);
+  color: var(--gray-400);
   margin-bottom: var(--space-8);
 }
 

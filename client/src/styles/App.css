@@ -74,7 +74,10 @@ p {
 }
 
 .btn-secondary:hover {
-  background-color: #0b7dda;
+  background-color: #0b7dda !important;
+  box-shadow: 0 6px 20px rgba(115, 183, 247, 0.4);
+  transform: translateY(-2px);
+  color: white !important;
 }
 
 /* CTA buttons container */
